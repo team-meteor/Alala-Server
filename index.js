@@ -1,27 +1,38 @@
-var express = require('express')
-var bodyParser = require('body-parser')
-var mongoose = require('mongoose')
-var multer = require('multer')
+import http from 'http';
+import express from 'express';
+import bodyParser from 'body-parser';
+import mongoose from 'mongoose';
+import config from './config';
+import routes from './routes';
+import passport from 'passport';
+const LocalStrategy = require('passport-local').Strategy;
 
-var app = express()
-// connect to database
-mongoose.connect('mongodb://localhost:27017/insta')
+let app = express();
+app.server = http.createServer(app);
 
-// middlewares
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true}));
+// middleware
 
-// static file 
-app.use(express.static('uploads'))
+app.use(bodyParser.json({
+  limit : config.bodyLimit
+}));
 
-// get routers/index.js
-var routes = require('./routes')
+// passport config
+app.use(passport.initialize());
+let Account = require('./model/account');
+passport.use(new LocalStrategy({
+  usernameField: 'email',
+  passwordField: 'password'
+},
+  Account.authenticate()
+));
+passport.serializeUser(Account.serializeUser());
+passport.deserializeUser(Account.deserializeUser());
 
-// /api router
-app.use('/api', routes)
+// api routes v1
+app.use('/api/v1', routes);
 
-// attach server
-app.set('port', process.env.PORT || 8000)
-var server = app.listen(app.get('port'), function() {
-    console.log('server started');
-});
+app.server.listen(config.port);
+
+console.log(`Started on port ${app.server.address().port}`);
+
+export default app;
