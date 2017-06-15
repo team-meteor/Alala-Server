@@ -14,6 +14,8 @@ app.use(bodyParser.json({
   limit: config.bodyLimit
 }))
 
+app.use(express.static('uploads'))
+
 // passport config
 app.use(passport.initialize())
 let User = require('./model/user')
