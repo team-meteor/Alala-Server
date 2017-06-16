@@ -11,6 +11,9 @@ let PostSchema = new Schema({
 		type: Schema.Types.ObjectId,
 		ref: 'Photo'
 	}],
+	description: {
+		type: String
+	},
 	createdAt: {
 		type: Date,
 		default: Date.now

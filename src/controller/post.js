@@ -47,6 +47,7 @@ export default({ config, db }) => {
 			receivedphotos.push(element)
 		});
 		post.createdBy = req.user.id
+		post.description = req.body.description
 		post.photos = receivedphotos
 		post.save(function(err) {
 			if (err) {
@@ -57,6 +58,9 @@ export default({ config, db }) => {
 	})
 	
 	// remove post
+	api.delete('/:id', authenticate, (req, res) => {
+		
+	})
 	
 	// update post
 	
