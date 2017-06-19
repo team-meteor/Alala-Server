@@ -28,7 +28,7 @@ export default({ config, db }) => {
 	})
 	
 	// get a post by id
-	api.get('/:id', (req, res) => {
+	api.get('/:id', authenticate, (req, res) => {
 		Post.findById(req.params.id, (err, post) => {
 			if (err) {
 				res.send(err)
