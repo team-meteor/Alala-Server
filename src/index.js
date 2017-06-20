@@ -14,7 +14,7 @@ app.use(bodyParser.json({
   limit: config.bodyLimit
 }))
 
-app.use(express.static('uploads'))
+app.use('/static', express.static('uploads'))
 
 // passport config
 app.use(passport.initialize())

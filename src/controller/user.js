@@ -128,6 +128,7 @@ export default ({
 						res.send(err)
 					}
 					res.status(200).json({
+						id: user._id,
 						email: user.username,
 						profileName: profilename,
 						photoId: photoId,
@@ -138,6 +139,46 @@ export default ({
 				})
 			})
 
+		})
+	})
+
+	api.post('/follow', authenticate, (req, res) => {
+		User.findById(req.user.id, (err, me) => {
+			User.findById(req.body.id, (err, targetUser) => {
+				me.following.push(targetUser._id)
+				targetUser.followers.push(me._id)
+				me.save((err) => {
+					if (err) {
+						res.send(err)
+					}
+					targetUser.save((err) => {
+						if (err) {
+							res.send(err)
+						}
+						res.status(200).send('follow successed')
+					})
+				})
+			})
+		})
+	})
+
+	api.post('/unfollow', authenticate, (req, res) => {
+		User.findById(req.user.id, (err, me) => {
+			User.findById(req.body.id, (err, targetUser) => {
+				me.following = me.following.filter(item => String(item) !== String(targetUser._id))
+				targetUser.followers = targetUser.followers.filter(item => String(item) !== String(me._id))
+				me.save((err) => {
+					if (err) {
+						res.send(err)
+					}
+					targetUser.save((err) => {
+						if (err) {
+							res.send(err)
+						}
+						res.status(200).send('unfollow successed')
+					})
+				})
+			})
 		})
 	})
 
