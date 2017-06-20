@@ -89,7 +89,7 @@ export default ({
 					if (id) {
 						user.photoId = id
 					}
-					user.profilename = newProfileName._id
+					user.profileName = newProfileName._id
 					user.save((err) => {
 						if (err) {
 							res.send(err)
@@ -115,7 +115,30 @@ export default ({
 	})
 
 	api.get('/me', authenticate, (req, res) => {
-		res.status(200).json(req.user)
+		User.findById(req.user.id, (err, user) => {
+			if (err) {
+				res.send(err)
+			}
+			ProfileName.findById(user.profileName, (err, profilename) => {
+				if (err) {
+					res.send(err)
+				}
+				Photo.findById(user.photoId, (err, photoId) => {
+					if (err) {
+						res.send(err)
+					}
+					res.status(200).json({
+						email: user.username,
+						profileName: profilename,
+						photoId: photoId,
+						following: user.following,
+						followers: user.followers,
+						createdAt: user.createdAt
+					})
+				})
+			})
+
+		})
 	})
 
 	return api

@@ -9,7 +9,7 @@ let UserSchema = new Schema({
 	password: {
 		type: String,
 	},
-	profilename: {
+	profileName: {
 		type: Schema.Types.ObjectId,
 		ref: 'ProfileName'
 	},
@@ -18,6 +18,10 @@ let UserSchema = new Schema({
 		ref: 'Photo'
 	},
 	following: [{
+		type: Schema.Types.ObjectId,
+		ref: 'User'
+	}],
+	followers: [{
 		type: Schema.Types.ObjectId,
 		ref: 'User'
 	}],
