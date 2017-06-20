@@ -125,19 +125,23 @@ export default ({
 	api.post('/follow', authenticate, (req, res) => {
 		User.findById(req.user.id, (err, me) => {
 			User.findById(req.body.id, (err, targetUser) => {
-				me.following.push(targetUser._id)
-				targetUser.followers.push(me._id)
-				me.save((err) => {
-					if (err) {
-						res.send(err)
-					}
-					targetUser.save((err) => {
+				if (me.following.includes(targetUser._id) === false && targetUser.followers.includes(me._id) == false) {
+					me.following.push(targetUser._id)
+					targetUser.followers.push(me._id)
+					me.save((err) => {
 						if (err) {
 							res.send(err)
 						}
-						res.status(200).send('follow successed')
+						targetUser.save((err) => {
+							if (err) {
+								res.send(err)
+							}
+							res.status(200).send('follow successed')
+						})
 					})
-				})
+				} else {
+					res.status(200).send('already followed')
+				}
 			})
 		})
 	})
