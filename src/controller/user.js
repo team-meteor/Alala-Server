@@ -115,57 +115,10 @@ export default ({
 	})
 
 	api.get('/me', authenticate, (req, res) => {
-		User.findById(req.user.id, (err, user) => {
-			if (err) {
-				res.send(err)
-			}
-			ProfileName.findById(user.profileName, (err, profilename) => {
-				if (err) {
-					res.send(err)
-				}
-				Photo.findById(user.photoId, (err, photoId) => {
-					if (err) {
-						res.send(err)
-					}
-					res.status(200).json({
-						id: user._id,
-						email: user.username,
-						profileName: profilename,
-						photoId: photoId,
-						following: user.following,
-						followers: user.followers,
-						createdAt: user.createdAt
-					})
-				})
-			})
-
-		})
-	})
-
-	api.get('/mepop', authenticate, (req, res) => {
 		User.findById(req.user.id)
 			.populate('following').populate('followers')
 			.exec((err, user) => {
-				// res.send(user)
-				ProfileName.findById(user.profileName, (err, profilename) => {
-					if (err) {
-						res.send(err)
-					}
-					Photo.findById(user.photoId, (err, photoId) => {
-						if (err) {
-							res.send(err)
-						}
-						res.status(200).json({
-							id: user._id,
-							email: user.username,
-							profileName: profilename,
-							photoId: photoId,
-							following: user.following,
-							followers: user.followers,
-							createdAt: user.createdAt
-						})
-					})
-				})
+				res.status(200).json(user)
 			})
 	})
 
