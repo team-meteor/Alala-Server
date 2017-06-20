@@ -142,6 +142,33 @@ export default ({
 		})
 	})
 
+	api.get('/mepop', authenticate, (req, res) => {
+		User.findById(req.user.id)
+			.populate('following').populate('followers')
+			.exec((err, user) => {
+				// res.send(user)
+				ProfileName.findById(user.profileName, (err, profilename) => {
+					if (err) {
+						res.send(err)
+					}
+					Photo.findById(user.photoId, (err, photoId) => {
+						if (err) {
+							res.send(err)
+						}
+						res.status(200).json({
+							id: user._id,
+							email: user.username,
+							profileName: profilename,
+							photoId: photoId,
+							following: user.following,
+							followers: user.followers,
+							createdAt: user.createdAt
+						})
+					})
+				})
+			})
+	})
+
 	api.post('/follow', authenticate, (req, res) => {
 		User.findById(req.user.id, (err, me) => {
 			User.findById(req.body.id, (err, targetUser) => {
