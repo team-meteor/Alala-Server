@@ -16,7 +16,7 @@ let PostSchema = new Schema({
 		type: Date,
 		default: Date.now
 	},
-	likedUser: [{
+	likedUsers: [{
 		type: Schema.Types.ObjectId, ref: 'User'
 	}],
 	comments: [{
@@ -32,7 +32,7 @@ let PostSchema = new Schema({
 })
 
 PostSchema.virtual('isLiked').get(function() {
-	return this.likedUser.length > 0
+	return this.likedUsers.length > 0
 })
 
 module.exports = mongoose.model('Post', PostSchema)
