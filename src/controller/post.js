@@ -14,23 +14,19 @@ export default ({
 	let api = Router()
 	// get all posts created by logined user
 	api.get('/feed', authenticate, (req, res) => {
-		User.findById(req.user.id, (user, err) => {
+		User.findById(req.user.id, (err, user) => {
 			if (err) {
 				res.send(err)
 			}
-			res.json(user)
+			Post.find({createdBy: {
+				$in: user.following
+			}}, (err, feed) => {
+				if (err) {
+					res.send(err)
+				}
+				res.json(feed)
+			})
 		})
-		
-		// Post.find({
-		// 	createdBy: { $in : {
-				
-		// 	}}
-		// }, (err, posts) => {
-		// 	if (err) {
-		// 		res.send(err)
-		// 	}
-		// 	res.json(posts)
-		// })
 	})
 
 	// get all my followed user's posts
@@ -68,12 +64,46 @@ export default ({
 		post.createdBy = req.user.id
 		post.description = req.body.description
 		post.photos = receivedphotos
-		post.save(function (err) {
+		post.save(function (err, savedPost) {
 			if (err) {
 				res.send(err)
 			}
 			res.json({
-				message: 'Post saved successfully'
+				savedPost
+			})
+		})
+	})
+	
+	api.post('/like', authenticate, (req, res) => {
+		Post.findById(req.body.id, (err, post) => {
+			if (err) {
+				res.send(err)
+			}
+			User.findById(req.user.id, (err, user) => {
+				if (err) {
+					res.send(err)
+				}
+				post.likedUser.push(user._id)
+				post.save((err, savedPost) => {
+					res.json(savedPost)
+				})
+			})
+		})
+	})
+	
+	api.post('/unlike', authenticate, (req, res) => {
+		Post.findById(req.body.id, (err, post) => {
+			if (err) {
+				res.send(err)
+			}
+			User.findById(req.user.id, (err, user) => {
+				if (err) {
+					res.send(err)
+				}
+				post.likedUser = post.likedUser.filter(item => String(item) !== String(user._id))
+				post.save((err, savedPost) => {
+					res.json(savedPost)
+				})
 			})
 		})
 	})

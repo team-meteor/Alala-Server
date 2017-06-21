@@ -1,6 +1,4 @@
 import mongoose from 'mongoose'
-// import User from './user'
-// import Photo from './photo'
 let Schema = mongoose.Schema
 
 let PostSchema = new Schema({
@@ -24,6 +22,17 @@ let PostSchema = new Schema({
 	comments: [{
 		type: Schema.Types.ObjectId, ref: 'Comment'
 	}]
+}, {
+	toObject: {
+		virtuals: true
+	},
+	toJSON: {
+		virtuals: true
+	}
+})
+
+PostSchema.virtual('isLiked').get(function() {
+	return this.likedUser.length > 0
 })
 
 module.exports = mongoose.model('Post', PostSchema)
