@@ -125,7 +125,7 @@ export default ({
 	api.post('/follow', authenticate, (req, res) => {
 		User.findById(req.user.id, (err, me) => {
 			User.findById(req.body.id, (err, targetUser) => {
-				if (me.following.includes(targetUser._id) === false && targetUser.followers.includes(me._id) == false) {
+				if (me.following.length === me.following.filter(item => String(item) !== String(targetUser._id)).length && targetUser.followers.length === targetUser.followers.filter(item => String(item) !== String(me._id)).length) {
 					me.following.push(targetUser._id)
 					targetUser.followers.push(me._id)
 					me.save((err) => {

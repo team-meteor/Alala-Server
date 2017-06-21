@@ -1,32 +1,51 @@
-import { Router } from 'express'
+import {
+	Router
+} from 'express'
 import Post from '../model/post'
+import User from '../model/user'
+import {
+	authenticate
+} from '../middleware/authMiddleWare'
 
-import { authenticate } from '../middleware/authMiddleWare'
-
-export default({ config, db }) => {
+export default ({
+	config,
+	db
+}) => {
 	let api = Router()
 	// get all posts created by logined user
-	api.get('/myposts', authenticate,(req, res) => {
-		console.log(req.user.id)
-		Post.find({ createdBy : req.user.id }, (err, posts) => {
+	api.get('/feed', authenticate, (req, res) => {
+		User.findById(req.user.id, (user, err) => {
 			if (err) {
 				res.send(err)
 			}
-			res.json(posts)
+			res.json(user)
 		})
+		
+		// Post.find({
+		// 	createdBy: { $in : {
+				
+		// 	}}
+		// }, (err, posts) => {
+		// 	if (err) {
+		// 		res.send(err)
+		// 	}
+		// 	res.json(posts)
+		// })
 	})
-	
+
 	// get all my followed user's posts
-	api.get('/myfeed', authenticate,(req, res) => {
+	api.get('/mine', authenticate, (req, res) => {
 		console.log(req.user.id)
-		Post.find({ createdBy : req.user.id }, (err, posts) => {
+		Post.find({
+			createdBy: req.user.id
+		}, (err, posts) => {
 			if (err) {
 				res.send(err)
 			}
 			res.json(posts)
 		})
 	})
-	
+
 	// get a post by id
 	api.get('/:id', authenticate, (req, res) => {
 		Post.findById(req.params.id, (err, post) => {
@@ -36,33 +55,35 @@ export default({ config, db }) => {
 			res.json(post)
 		})
 	})
-	
+
 	// add a post
 	api.post('/add', authenticate, (req, res) => {
 		// console.log(req.user.id)
 		let post = new Post()
 		let receivedphotos = []
 		// console.log(req.body.photos)
-		req.body.photos.forEach(function(element) {
+		req.body.photos.forEach(function (element) {
 			receivedphotos.push(element)
 		});
 		post.createdBy = req.user.id
 		post.description = req.body.description
 		post.photos = receivedphotos
-		post.save(function(err) {
+		post.save(function (err) {
 			if (err) {
 				res.send(err)
 			}
-			res.json({ message: 'Post saved successfully' })
+			res.json({
+				message: 'Post saved successfully'
+			})
 		})
 	})
-	
+
 	// remove post
 	api.delete('/:id', authenticate, (req, res) => {
-		
+
 	})
-	
+
 	// update post
-	
+
 	return api
 }
