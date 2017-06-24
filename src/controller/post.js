@@ -13,18 +13,26 @@ export default ({
 }) => {
 	let api = Router()
 	// get all posts created by logined user
-	api.get('/feed', authenticate, (req, res) => {
+	api.post('/feed', authenticate, (req, res) => {
 		User.findById(req.user.id, (err, user) => {
 			if (err) {
 				res.send(err)
 			}
-			Post.find({createdBy: {
-				$in: user.following
-			}}, (err, feed) => {
-				if (err) {
-					res.send(err)
+			const query = {
+				createdBy: {
+					$in: user.following
 				}
-				res.json(feed)
+			}
+			const options = {
+				sort: { createdAt: -1 },
+				populate: ['photos', 'likedUsers', 'comments'],
+				// offset: 2
+				// limit: 10
+				page : req.body.page
+			}
+			Post.paginate(query, options, (err, result) => {
+				result.nextPage = Number(result.page) + 1
+				res.json(result)
 			})
 		})
 	})

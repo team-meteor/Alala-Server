@@ -7,7 +7,8 @@ let CommentSchema = new Schema({
 		ref: 'User'
 	},
 	likedUsers: [{
-		type: Schema.Types.ObjectId, ref: 'User'
+		type: Schema.Types.ObjectId, 
+		ref: 'User'
 	}],
 	createdAt: {
 		type: Date,
