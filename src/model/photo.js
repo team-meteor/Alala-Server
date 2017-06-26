@@ -2,7 +2,7 @@ import mongoose from 'mongoose'
 let Schema = mongoose.Schema
 
 let PhotoSchema = new Schema({
-	url: String,
+	fileName: String,
 	createdAt: {
 		type: Date,
 		default: Date.now
