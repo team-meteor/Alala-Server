@@ -53,5 +53,4 @@ jspm_packages
 # Yarn Integrity file
 .yarn-integrity
 
-# Serverless directories
-.serverless
+aws.js
