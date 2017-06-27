@@ -8,9 +8,9 @@ let PostSchema = new Schema({
 		type: Schema.Types.ObjectId,
 		ref: 'User'
 	},
-	photos: [{
+	multiparts: [{
 		type: Schema.Types.ObjectId,
-		ref: 'Photo'
+		ref: 'Multipart'
 	}],
 	description: {
 		type: String

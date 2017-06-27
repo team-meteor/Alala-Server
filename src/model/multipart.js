@@ -1,7 +1,7 @@
 import mongoose from 'mongoose'
 let Schema = mongoose.Schema
 
-let PhotoSchema = new Schema({
+let MultipartSchema = new Schema({
 	fileName: String,
 	createdAt: {
 		type: Date,
@@ -9,4 +9,4 @@ let PhotoSchema = new Schema({
 	}
 })
 
-module.exports = mongoose.model('Photo', PhotoSchema)
+module.exports = mongoose.model('Multipart', MultipartSchema)

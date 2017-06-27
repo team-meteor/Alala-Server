@@ -2,7 +2,7 @@ import {
 	Router
 } from 'express'
 import User from '../model/user'
-import Photo from '../model/photo'
+import Multipart from '../model/multipart'
 import ProfileName from '../model/profilename'
 import passport from 'passport'
 
@@ -82,12 +82,12 @@ export default ({
 				if (err) {
 					res.send(err)
 				}
-				Photo.findById(req.body.photoId, (err, id) => {
+				Multipart.findById(req.body.multipartId, (err, id) => {
 					if (err) {
 						res.send(err)
 					}
 					if (id) {
-						user.photoId = id
+						user.multipartId = id
 					}
 					user.profileName = newProfileName._id
 					user.save((err) => {

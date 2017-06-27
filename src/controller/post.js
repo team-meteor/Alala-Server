@@ -25,7 +25,7 @@ export default ({
 			}
 			const options = {
 				sort: { createdAt: -1 },
-				populate: ['photos', 'likedUsers', 'comments'],
+				populate: ['ms', 'likedUsers', 'comments'],
 				// offset: 2
 				// limit: 10
 				page : req.body.page
@@ -64,14 +64,14 @@ export default ({
 	api.post('/add', authenticate, (req, res) => {
 		// console.log(req.user.id)
 		let post = new Post()
-		let receivedphotos = []
-		// console.log(req.body.photos)
-		req.body.photos.forEach(function (element) {
-			receivedphotos.push(element)
+		let receivedmultiparts = []
+		// console.log(req.body.multiparts)
+		req.body.multiparts.forEach(function (element) {
+			receivedmultiparts.push(element)
 		});
 		post.createdBy = req.user.id
 		post.description = req.body.description
-		post.photos = receivedphotos
+		post.multiparts = receivedmultiparts
 		post.save(function (err, savedPost) {
 			if (err) {
 				res.send(err)

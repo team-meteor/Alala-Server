@@ -13,9 +13,9 @@ let UserSchema = new Schema({
 		type: Schema.Types.ObjectId,
 		ref: 'ProfileName'
 	},
-	photoId: {
+	multipartId: {
 		type: Schema.Types.ObjectId,
-		ref: 'Photo'
+		ref: 'Multipart'
 	},
 	following: [{
 		type: Schema.Types.ObjectId,
