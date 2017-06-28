@@ -28,7 +28,6 @@ export default ({
 	let api = Router()
 	api.post('/', upload.single('multipart'), function (req, res, next) {
 		const fileName = Date.now()
-		console.log(req.file)
 		let uploadCounter = 0
 
 		function callback() {
@@ -74,7 +73,6 @@ export default ({
 				}
 			})
 		}
-		console.log(req.file)
 		if (req.file.mimetype === "image/jpg") {
 			sizes.forEach(sharpBuffer)
 		} else {
