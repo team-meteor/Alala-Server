@@ -26,7 +26,7 @@ export default ({
 	db
 }) => {
 	let api = Router()
-	api.post('/single', upload.single('multipart'), function (req, res, next) {
+	api.post('/', upload.single('multipart'), function (req, res, next) {
 		const fileName = Date.now()
 		console.log(req.file)
 		let uploadCounter = 0
@@ -77,6 +77,7 @@ export default ({
 		if (req.file.mimetype === "image/jpg") {
 			sizes.forEach(sharpBuffer)
 		} else {
+			console.log(req.file)
 			videoBuffer(req.file)
 		}
 	})
