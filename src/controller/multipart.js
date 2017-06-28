@@ -74,10 +74,10 @@ export default ({
 				}
 			})
 		}
+		console.log(req.file)
 		if (req.file.mimetype === "image/jpg") {
 			sizes.forEach(sharpBuffer)
 		} else {
-			console.log(req.file)
 			videoBuffer(req.file)
 		}
 	})
