@@ -1,4 +1,5 @@
 ### 개발 환경 설정
+06-28-17
 ```bash
 brew install mongodb
 brew services start mongodb
