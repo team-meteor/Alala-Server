@@ -14,8 +14,7 @@ let UserSchema = new Schema({
 		ref: 'ProfileName'
 	},
 	multipartId: {
-		type: Schema.Types.ObjectId,
-		ref: 'Multipart'
+		type: String
 	},
 	following: [{
 		type: Schema.Types.ObjectId,

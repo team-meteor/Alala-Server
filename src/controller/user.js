@@ -2,7 +2,6 @@ import {
 	Router
 } from 'express'
 import User from '../model/user'
-import Multipart from '../model/multipart'
 import ProfileName from '../model/profilename'
 import passport from 'passport'
 
@@ -78,26 +77,16 @@ export default ({
 			let newProfileName = ProfileName()
 			newProfileName.name = req.body.profilename
 			newProfileName.save((err) => {
-				console.log(newProfileName)
 				if (err) {
 					res.send(err)
 				}
-				Multipart.findById(req.body.multipartId, (err, id) => {
+				user.multipartId = req.body.multipartId
+				user.profileName = newProfileName._id
+				user.save((err) => {
 					if (err) {
 						res.send(err)
 					}
-					if (id) {
-						user.multipartId = id
-					}
-					user.profileName = newProfileName._id
-					user.save((err) => {
-						if (err) {
-							res.send(err)
-						}
-						res.json({
-							message: 'profile updated'
-						})
-					})
+					res.json(user)
 				})
 			})
 		})

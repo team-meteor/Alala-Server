@@ -6,7 +6,6 @@ import {
 	Router
 } from 'express'
 
-import Multipart from '../model/multipart'
 import awskey from '../config/credentials'
 
 const storage = multer.memoryStorage()
@@ -31,14 +30,7 @@ export default ({
 		let uploadCounter = 0
 
 		function callback() {
-			let multipart = new Multipart()
-			multipart.fileName = fileName
-			multipart.save((err) => {
-				if (err) {
-					res.send(err)
-				}
-				res.send(multipart._id)
-			})
+			res.json(fileName)
 		}
 
 		function sharpBuffer(size) {
@@ -59,7 +51,7 @@ export default ({
 			})
 		}
 
-		function videoBuffer(file) {
+		function uploadBuffer(file) {
 			s3.putObject({
 				Bucket: 'alala-static',
 				Key: fileName + path.extname(req.file.originalname),
@@ -73,10 +65,10 @@ export default ({
 				}
 			})
 		}
-		if (req.file.mimetype === "image/jpg") {
+		if (req.file.mimetype === "image/jpg" || req.file.mimetype === 'image/png') {
 			sizes.forEach(sharpBuffer)
 		} else {
-			videoBuffer(req.file)
+			uploadBuffer(req.file)
 		}
 	})
 	return api

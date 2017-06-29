@@ -9,8 +9,7 @@ let PostSchema = new Schema({
 		ref: 'User'
 	},
 	multiparts: [{
-		type: Schema.Types.ObjectId,
-		ref: 'Multipart'
+		type: String
 	}],
 	description: {
 		type: String
