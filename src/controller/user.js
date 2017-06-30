@@ -32,7 +32,6 @@ export default ({
 			function (err, user) {
 				if (err) {
 					if (err.name === "UserExistsError") {
-						console.log("User Exists")
 						return res.status(409).send(err)
 					} else {
 						return res.status(500).send(err)
@@ -69,7 +68,6 @@ export default ({
 	})
 
 	api.put('/profile/', authenticate, (req, res) => {
-		console.log("user", req.user)
 		User.findById(req.user.id, (err, user) => {
 			if (err) {
 				res.send(err)
@@ -81,7 +79,7 @@ export default ({
 					res.send(err)
 				}
 				user.multipartId = req.body.multipartId
-				user.profileName = newProfileName._id
+				user.profileName = req.body.profileName
 				user.save((err) => {
 					if (err) {
 						res.send(err)

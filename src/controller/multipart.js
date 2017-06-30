@@ -27,17 +27,18 @@ export default ({
 	let api = Router()
 	api.post('/', upload.single('multipart'), function (req, res, next) {
 		const fileName = Date.now()
+		const extname = path.extname(req.file.originalname)
 		let uploadCounter = 0
 
 		function callback() {
-			res.json(fileName)
+			res.json(fileName + extname)
 		}
 
 		function sharpBuffer(size) {
 			sharp(req.file.buffer).resize(size).toBuffer((err, buffer, info) => {
 				s3.putObject({
 					Bucket: 'alala-static',
-					Key: fileName + String(size) + path.extname(req.file.originalname),
+					Key: String(size) + fileName + extname,
 					Body: buffer,
 					ACL: 'public-read'
 				}, (err, data) => {
@@ -54,7 +55,7 @@ export default ({
 		function uploadBuffer(file) {
 			s3.putObject({
 				Bucket: 'alala-static',
-				Key: fileName + path.extname(req.file.originalname),
+				Key: fileName + extname,
 				Body: file.buffer,
 				ACL: 'public-read'
 			}, (err, data) => {

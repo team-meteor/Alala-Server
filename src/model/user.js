@@ -10,8 +10,7 @@ let UserSchema = new Schema({
 		type: String,
 	},
 	profileName: {
-		type: Schema.Types.ObjectId,
-		ref: 'ProfileName'
+		type: String
 	},
 	multipartId: {
 		type: String

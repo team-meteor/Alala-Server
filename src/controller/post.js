@@ -25,7 +25,7 @@ export default ({
 			}
 			const options = {
 				sort: { createdAt: -1 },
-				populate: ['ms', 'likedUsers', 'comments'],
+				populate: ['createdBy', 'likedUsers', 'comments'],
 				// offset: 2
 				// limit: 10
 				page : req.body.page
@@ -39,7 +39,6 @@ export default ({
 
 	// get all my followed user's posts
 	api.get('/mine', authenticate, (req, res) => {
-		console.log(req.user.id)
 		Post.find({
 			createdBy: req.user.id
 		}, (err, posts) => {
@@ -62,10 +61,8 @@ export default ({
 
 	// add a post
 	api.post('/add', authenticate, (req, res) => {
-		// console.log(req.user.id)
 		let post = new Post()
 		let receivedmultiparts = []
-		// console.log(req.body.multiparts)
 		req.body.multiparts.forEach(function (element) {
 			receivedmultiparts.push(element)
 		});
