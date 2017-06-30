@@ -18,7 +18,7 @@ AWS.config.update({
 	region: 'ap-northeast-2'
 })
 const s3 = new AWS.S3()
-const sizes = [640, 320, 200, 128, 64, 40]
+const sizes = [40, 64, 128, 200, 320, 640]
 
 export default ({
 	config,
@@ -26,19 +26,23 @@ export default ({
 }) => {
 	let api = Router()
 	api.post('/', upload.single('multipart'), function (req, res, next) {
-		const fileName = Date.now()
+		let fileName = Date.now()
+		let ratioFileName = ""
 		const extname = path.extname(req.file.originalname)
 		let uploadCounter = 0
 
 		function callback() {
-			res.json(fileName + extname)
+			res.json(ratioFileName + extname)
 		}
 
 		function sharpBuffer(size) {
-			sharp(req.file.buffer).resize(size).toBuffer((err, buffer, info) => {
+			sharp(req.file.buffer).resize(size).max().toBuffer((err, buffer, info) => {
+				if (size === 40) {
+					ratioFileName = info.height / info.width + "_" + fileName
+				}
 				s3.putObject({
 					Bucket: 'alala-static',
-					Key: String(size) + fileName + extname,
+					Key: size + "_" + ratioFileName + extname,
 					Body: buffer,
 					ACL: 'public-read'
 				}, (err, data) => {
@@ -66,7 +70,7 @@ export default ({
 				}
 			})
 		}
-		if (req.file.mimetype === "image/jpg" || req.file.mimetype === 'image/png') {
+		if (req.file.mimetype === "image/jpg" || req.file.mimetype === 'image/png' || req.file.mimetype === 'image/jpeg') {
 			sizes.forEach(sharpBuffer)
 		} else {
 			uploadBuffer(req.file)
