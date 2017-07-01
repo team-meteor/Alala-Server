@@ -75,7 +75,9 @@ export default ({
 			if (err) {
 				res.send(err)
 			}
-			res.json(savedPost)
+			Post.findById(savedPost._id).populate('createdBy').exec((err, post) => {
+				res.json(post)
+			})
 		})
 	})
 
