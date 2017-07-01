@@ -1,6 +1,7 @@
 import path from 'path'
 import multer from 'multer'
 import sharp from 'sharp'
+import sizeOf from 'image-size'
 import AWS from 'aws-sdk'
 import {
 	Router
@@ -26,23 +27,20 @@ export default ({
 }) => {
 	let api = Router()
 	api.post('/', upload.single('multipart'), function (req, res, next) {
-		let fileName = Date.now()
-		let ratioFileName = ""
 		const extname = path.extname(req.file.originalname)
 		let uploadCounter = 0
-
+		let dimensions = sizeOf(req.file.buffer)
+		let fileName = String(dimensions.height / dimensions.width) + "_" + String(Date.now())
+		console.log(dimensions)
 		function callback() {
-			res.json(ratioFileName + extname)
+			res.json(fileName + extname)
 		}
 
 		function sharpBuffer(size) {
 			sharp(req.file.buffer).resize(size).max().toBuffer((err, buffer, info) => {
-				if (size === 40) {
-					ratioFileName = info.height / info.width + "_" + fileName
-				}
 				s3.putObject({
 					Bucket: 'alala-static',
-					Key: size + "_" + ratioFileName + extname,
+					Key: size + "_" + fileName + extname,
 					Body: buffer,
 					ACL: 'public-read'
 				}, (err, data) => {

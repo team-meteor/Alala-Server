@@ -73,7 +73,7 @@ export default ({
 				res.send(err)
 			}
 			let newProfileName = ProfileName()
-			newProfileName.name = req.body.profilename
+			newProfileName.name = req.body.profileName
 			newProfileName.save((err) => {
 				if (err) {
 					res.send(err)
