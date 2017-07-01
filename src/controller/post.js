@@ -24,11 +24,13 @@ export default ({
 				}
 			}
 			const options = {
-				sort: { createdAt: -1 },
+				sort: {
+					createdAt: -1
+				},
 				populate: ['createdBy', 'likedUsers', 'comments'],
 				// offset: 2
 				// limit: 10
-				page : req.body.page
+				page: req.body.page
 			}
 			Post.paginate(query, options, (err, result) => {
 				result.nextPage = Number(result.page) + 1
@@ -73,12 +75,10 @@ export default ({
 			if (err) {
 				res.send(err)
 			}
-			res.json({
-				savedPost
-			})
+			res.json(savedPost)
 		})
 	})
-	
+
 	api.post('/like', authenticate, (req, res) => {
 		Post.findById(req.body.id, (err, post) => {
 			if (err) {
@@ -88,14 +88,14 @@ export default ({
 				if (err) {
 					res.send(err)
 				}
-				post.likedUser.push(user._id)
+				post.likedUsers.push(user._id)
 				post.save((err, savedPost) => {
 					res.json(savedPost)
 				})
 			})
 		})
 	})
-	
+
 	api.post('/unlike', authenticate, (req, res) => {
 		Post.findById(req.body.id, (err, post) => {
 			if (err) {
