@@ -29,9 +29,8 @@ export default ({
 	api.post('/', upload.single('multipart'), function (req, res, next) {
 		const extname = path.extname(req.file.originalname)
 		let uploadCounter = 0
-		let dimensions = sizeOf(req.file.buffer)
-		let fileName = String(dimensions.height / dimensions.width) + "_" + String(Date.now())
-		console.log(dimensions)
+		let dimensions
+		let fileName = Date.now()
 		function callback() {
 			res.json(fileName + extname)
 		}
@@ -69,6 +68,8 @@ export default ({
 			})
 		}
 		if (req.file.mimetype === "image/jpg" || req.file.mimetype === 'image/png' || req.file.mimetype === 'image/jpeg') {
+			dimensions = sizeOf(req.file.buffer)
+			fileName = String(dimensions.height / dimensions.width) + "_" + String(Date.now())
 			sizes.forEach(sharpBuffer)
 		} else {
 			uploadBuffer(req.file)
