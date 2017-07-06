@@ -3,6 +3,7 @@ import {
 } from 'express'
 import Post from '../model/post'
 import User from '../model/user'
+import Comment from '../model/comment'
 import {
 	authenticate
 } from '../middleware/authMiddleWare'
@@ -39,15 +40,19 @@ export default ({
 		})
 	})
 
-	// get all my followed user's posts
-	api.get('/mine', authenticate, (req, res) => {
-		Post.find({
+	api.post('/mine', authenticate, (req, res) => {
+		const query = {
 			createdBy: req.user.id
-		}, (err, posts) => {
-			if (err) {
-				res.send(err)
-			}
-			res.json(posts)
+		}
+		const options = {
+			sort: {
+				createdAt: -1
+			},
+			populate: ['createdBy', 'likedUsers', 'comments'],
+			page: req.body.page
+		}
+		Post.paginate(query, options, (err, result) => {
+			res.json(result)
 		})
 	})
 
@@ -110,6 +115,25 @@ export default ({
 				post.likedUser = post.likedUser.filter(item => String(item) !== String(user._id))
 				post.save((err, savedPost) => {
 					res.json(savedPost)
+				})
+			})
+		})
+	})
+
+	api.post('/comment/add/', authenticate, (req, res) => {
+		Post.findById(req.body.id, (err, post) => {
+			if (err) {
+				res.send(err)
+			}
+			let newComment = new Comment()
+			newComment.createdBy = req.user.id
+			newComment.content = req.body.content
+			newComment.save((err, savedComment) => {
+				post.comments.push(savedComment)
+				post.save((err, updatedPost) => {
+					Post.findById(updatedPost._id).populate('createdBy comments').exec((err, post) => {
+						res.json(post)
+					})
 				})
 			})
 		})
