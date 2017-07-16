@@ -80,6 +80,12 @@ export default ({
 				}
 				user.multipartId = req.body.multipartId
 				user.profileName = req.body.profileName
+				user.email = req.body.email
+				user.displayName = req.body.displayName
+				user.bio = req.body.bio
+				user.website = req.body.website
+				user.gender = req.body.gender
+				user.phone = req.body.phone
 				user.save((err) => {
 					if (err) {
 						res.send(err)

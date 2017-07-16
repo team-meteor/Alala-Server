@@ -26,6 +26,21 @@ let UserSchema = new Schema({
 	createdAt: {
 		type: Date,
 		default: Date.now
+	},
+	displayName: {
+		type: String
+	},
+	bio: {
+		type: String
+	},
+	website: {
+		type: String
+	},
+	gender: {
+		type: String
+	},
+	phone: {
+		type: String
 	}
 })
 
