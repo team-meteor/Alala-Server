@@ -95,7 +95,9 @@ export default ({
 				if (err) {
 					res.send(err)
 				}
+				console.log("like user._id", user._id)
 				post.likedUsers.push(user._id)
+				console.log("like users", post.likedUsers)
 				post.save((err, savedPost) => {
 					res.json(savedPost)
 				})
@@ -112,7 +114,10 @@ export default ({
 				if (err) {
 					res.send(err)
 				}
-				post.likedUser = post.likedUser.filter(item => String(item) !== String(user._id))
+				console.log("unlike user._id", user._id)
+				console.log("likeduser", post.likedUser)
+				post.likedUsers = post.likedUsers.filter(item => String(item) !== String(user._id))
+				console.log("likeduser", post.likedUsers)
 				post.save((err, savedPost) => {
 					res.json(savedPost)
 				})
