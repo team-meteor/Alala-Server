@@ -26,54 +26,52 @@ export default ({
 	db
 }) => {
 	let api = Router()
-	api.post('/', upload.single('multipart'), function (req, res, next) {
-		const extname = path.extname(req.file.originalname)
-		let uploadCounter = 0
-		let dimensions
-		let fileName = Date.now()
-		function callback() {
-			res.json(fileName + extname)
-		}
-
-		function sharpBuffer(size) {
-			sharp(req.file.buffer).resize(size).max().toBuffer((err, buffer, info) => {
-				s3.putObject({
-					Bucket: 'alala-static',
-					Key: size + "_" + fileName + extname,
-					Body: buffer,
-					ACL: 'public-read'
-				}, (err, data) => {
-					if (data) {
-						uploadCounter++
-						if (uploadCounter === sizes.length) {
-							callback()
-						}
-					}
+	api.post('/', upload.array('multiparts'), function (req, res, next) {
+		let fileNames = []
+		function uploadImage(file) {
+			sizes.forEach(function (size) {
+				sharp(file.buffer).resize(size).max().toBuffer((err, buffer, info) => {
+					const uploadedFilename = Date.now() + path.extname(file.originalname)
+					s3.putObject({
+						Bucket: 'alala-static',
+						Key: uploadedFilename,
+						Body: buffer,
+						ACL: 'public-read'
+					}, (err, data) => {
+						fileNames.push(uploadedFilename)
+						callback()
+					})
 				})
 			})
 		}
 
-		function uploadBuffer(file) {
+		function uploadVideo(file) {
+			const uploadedFilename = Date.now() + path.extname(file.originalname)
 			s3.putObject({
 				Bucket: 'alala-static',
-				Key: fileName + extname,
+				Key: uploadedFilename,
 				Body: file.buffer,
 				ACL: 'public-read'
 			}, (err, data) => {
 				if (data) {
-					if (data) {
-						callback()
-					}
+					fileNames.push(uploadedFilename)
+					callback()
 				}
 			})
 		}
-		if (req.file.mimetype === "image/jpg" || req.file.mimetype === 'image/png' || req.file.mimetype === 'image/jpeg') {
-			dimensions = sizeOf(req.file.buffer)
-			fileName = String(dimensions.height / dimensions.width) + "_" + String(Date.now())
-			sizes.forEach(sharpBuffer)
-		} else {
-			uploadBuffer(req.file)
+
+		function callback() {
+			if (fileNames.length === req.files.length) {
+				res.json(fileNames)
+			}
 		}
+		req.files.forEach(function (file) {
+			if (file.mimetype.includes("image")) {
+				uploadImage(file)
+			} else {
+				uploadVideo(file)
+			}
+		})
 	})
 	return api
 }

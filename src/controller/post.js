@@ -28,13 +28,16 @@ export default ({
 				sort: {
 					createdAt: -1
 				},
-				populate: ['createdBy', 'likedUsers', 'comments'],
-				// offset: 2
-				// limit: 10
+				populate: [
+					{path: 'createdBy'}, 
+					{path: 'likedUsers'}, 
+					{path: 'comments', model: 'Comment'},
+					{path: 'comments', populate: {path: 'createdBy'}},
+				],
 				page: req.body.page
 			}
 			Post.paginate(query, options, (err, result) => {
-				result.nextPage = Number(result.page) + 1
+				result.nextPage = String(Number(result.page) + 1)
 				res.json(result)
 			})
 		})
