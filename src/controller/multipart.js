@@ -28,17 +28,20 @@ export default ({
 	let api = Router()
 	api.post('/', upload.array('multiparts'), function (req, res, next) {
 		let fileNames = []
+
 		function uploadImage(file) {
 			sizes.forEach(function (size) {
 				sharp(file.buffer).resize(size).max().toBuffer((err, buffer, info) => {
-					const uploadedFilename = Date.now() + path.extname(file.originalname)
+					const dimensions = sizeOf(buffer)
+					const multipartId = file.originalname
+					const uploadedFilename = size + "_" + multipartId
 					s3.putObject({
 						Bucket: 'alala-static',
 						Key: uploadedFilename,
 						Body: buffer,
 						ACL: 'public-read'
 					}, (err, data) => {
-						fileNames.push(uploadedFilename)
+						fileNames.push(multipartId)
 						callback()
 					})
 				})
@@ -46,7 +49,6 @@ export default ({
 		}
 
 		function uploadVideo(file) {
-			const uploadedFilename = Date.now() + path.extname(file.originalname)
 			s3.putObject({
 				Bucket: 'alala-static',
 				Key: uploadedFilename,
@@ -54,7 +56,7 @@ export default ({
 				ACL: 'public-read'
 			}, (err, data) => {
 				if (data) {
-					fileNames.push(uploadedFilename)
+					fileNames.push(file.originalname)
 					callback()
 				}
 			})
@@ -67,6 +69,8 @@ export default ({
 		}
 		req.files.forEach(function (file) {
 			if (file.mimetype.includes("image")) {
+				const dimensions = sizeOf(file.buffer)
+				file.originalname = String(dimensions.height / dimensions.width) + "_" + String(Date.now()) + path.extname(file.originalname)
 				uploadImage(file)
 			} else {
 				uploadVideo(file)
