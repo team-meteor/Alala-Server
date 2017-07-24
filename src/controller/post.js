@@ -30,7 +30,7 @@ export default ({
 				},
 				populate: [
 					{path: 'createdBy'}, 
-					{path: 'likedUsers'}, 
+					{path: 'likedUsers'},
 					{path: 'comments', model: 'Comment'},
 					{path: 'comments', populate: {path: 'createdBy'}},
 				],
@@ -98,11 +98,13 @@ export default ({
 				if (err) {
 					res.send(err)
 				}
-				console.log("like user._id", user._id)
-				post.likedUsers.push(user._id)
-				console.log("like users", post.likedUsers)
+				if (post.likedUsers.indexOf(user._id) === -1) {
+					post.likedUsers.push(user._id)	
+				}
 				post.save((err, savedPost) => {
-					res.json(savedPost)
+					Post.findById(savedPost.id).populate({path: 'likedUsers'}).exec((err, post) => {
+						res.json(post)
+					})
 				})
 			})
 		})
@@ -117,12 +119,11 @@ export default ({
 				if (err) {
 					res.send(err)
 				}
-				console.log("unlike user._id", user._id)
-				console.log("likeduser", post.likedUser)
 				post.likedUsers = post.likedUsers.filter(item => String(item) !== String(user._id))
-				console.log("likeduser", post.likedUsers)
 				post.save((err, savedPost) => {
-					res.json(savedPost)
+					Post.findById(savedPost.id).populate('likedUsers').exec((err, post) => {
+						res.json(post)
+					})
 				})
 			})
 		})

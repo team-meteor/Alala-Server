@@ -64,7 +64,6 @@ export default ({
 		function callback() {
 			if (fileNames.length === counter) {
 				res.json(fileNames)
-				console.log(fileNames)
 			}
 		}
 		req.files.forEach(function (file) {
@@ -72,7 +71,6 @@ export default ({
 				const dimensions = sizeOf(file.buffer)
 				file.originalname = String(dimensions.height / dimensions.width) + "_" + file.size + String(Date.now()) + path.extname(file.originalname)
 				fileNames.push(file.originalname)
-				console.log(file.originalname, file.size)
 				uploadImage(file)
 			} else {
 				uploadVideo(file)
