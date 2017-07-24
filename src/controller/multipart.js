@@ -28,20 +28,19 @@ export default ({
 	let api = Router()
 	api.post('/', upload.array('multiparts'), function (req, res, next) {
 		let fileNames = []
+		let counter = 0
 
 		function uploadImage(file) {
 			sizes.forEach(function (size) {
 				sharp(file.buffer).resize(size).max().toBuffer((err, buffer, info) => {
-					const dimensions = sizeOf(buffer)
-					const multipartId = file.originalname
-					const uploadedFilename = size + "_" + multipartId
+					const uploadedFilename = size + "_" + file.originalname
 					s3.putObject({
 						Bucket: 'alala-static',
 						Key: uploadedFilename,
 						Body: buffer,
 						ACL: 'public-read'
 					}, (err, data) => {
-						fileNames.push(multipartId)
+						counter += 1
 						callback()
 					})
 				})
@@ -51,19 +50,19 @@ export default ({
 		function uploadVideo(file) {
 			s3.putObject({
 				Bucket: 'alala-static',
-				Key: uploadedFilename,
+				Key: file.originalname,
 				Body: file.buffer,
 				ACL: 'public-read'
 			}, (err, data) => {
 				if (data) {
-					fileNames.push(file.originalname)
+					counter += 1
 					callback()
 				}
 			})
 		}
 
 		function callback() {
-			if (fileNames.length === req.files.length) {
+			if (fileNames.length === counter) {
 				res.json(fileNames)
 			}
 		}
@@ -71,9 +70,11 @@ export default ({
 			if (file.mimetype.includes("image")) {
 				const dimensions = sizeOf(file.buffer)
 				file.originalname = String(dimensions.height / dimensions.width) + "_" + String(Date.now()) + path.extname(file.originalname)
+				fileNames.push(file.originalname)
 				uploadImage(file)
 			} else {
 				uploadVideo(file)
+				file.originalname = String(Date.now()) + path.extname(file.originalname)
 			}
 		})
 	})
