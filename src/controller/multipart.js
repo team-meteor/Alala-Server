@@ -70,13 +70,13 @@ export default ({
 		req.files.forEach(function (file) {
 			if (file.mimetype.includes("image")) {
 				const dimensions = sizeOf(file.buffer)
-				file.originalname = String(dimensions.height / dimensions.width) + "_" + String(Date.now()) + path.extname(file.originalname)
+				file.originalname = String(dimensions.height / dimensions.width) + "_" + file.size + String(Date.now()) + path.extname(file.originalname)
 				fileNames.push(file.originalname)
-				console.log(file.originalname)
+				console.log(file.originalname, file.size)
 				uploadImage(file)
 			} else {
 				uploadVideo(file)
-				file.originalname = String(Date.now()) + path.extname(file.originalname)
+				file.originalname = file.size + String(Date.now()) + path.extname(file.originalname)
 			}
 		})
 	})
