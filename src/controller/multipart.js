@@ -73,8 +73,9 @@ export default ({
 				fileNames.push(file.originalname)
 				uploadImage(file)
 			} else {
-				uploadVideo(file)
 				file.originalname = file.size + String(Date.now()) + path.extname(file.originalname)
+				fileNames.push(file.originalname)
+				uploadVideo(file)
 			}
 		})
 	})
