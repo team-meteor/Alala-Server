@@ -77,7 +77,8 @@ export default ({
 			receivedmultiparts.push(element)
 		});
 		post.createdBy = req.user.id
-		post.description = req.body.description
+		// post.description = req.body.description
+		post.comments = req.body.comments
 		post.multiparts = receivedmultiparts
 		post.save(function (err, savedPost) {
 			if (err) {
