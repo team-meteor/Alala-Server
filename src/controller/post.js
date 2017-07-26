@@ -88,38 +88,48 @@ export default ({
 			receivedmultiparts.push(element)
 		});
 		post.createdBy = req.user.id
-		let newComment = new Comment()
-		newComment.createdBy = req.user.id
-		newComment.content = req.body.content
-		newComment.save((err) => {
-			post.multiparts = receivedmultiparts
-			post.comments.push(newComment)
+		post.multiparts = receivedmultiparts
+		if (req.body.content !== null) {
+			let newComment = new Comment()
+			newComment.createdBy = req.user.id
+			newComment.content = req.body.content
+			newComment.save((err) => {
+				post.comments.push(newComment)
+				post.save(function (err, savedPost) {
+					if (err) {
+						res.send(err)
+					}
+					Post.findById(savedPost._id).populate([{
+							path: 'createdBy'
+						},
+						{
+							path: 'likedUsers'
+						},
+						{
+							path: 'comments',
+							model: 'Comment'
+						},
+						{
+							path: 'comments',
+							populate: {
+								path: 'createdBy'
+							}
+						},
+					]).exec((err, post) => {
+						res.json(post)
+					})
+				})
+			})
+		} else {
 			post.save(function (err, savedPost) {
 				if (err) {
 					res.send(err)
 				}
-				Post.findById(savedPost._id).populate([{
-						path: 'createdBy'
-					},
-					{
-						path: 'likedUsers'
-					},
-					{
-						path: 'comments',
-						model: 'Comment'
-					},
-					{
-						path: 'comments',
-						populate: {
-							path: 'createdBy'
-						}
-					},
-				]).exec((err, post) => {
+				Post.findById(savedPost._id).populate('createdBy').exec((err, post) => {
 					res.json(post)
 				})
 			})
-		})
-
+		}
 	})
 
 	api.post('/like', authenticate, (req, res) => {
