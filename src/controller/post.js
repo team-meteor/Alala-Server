@@ -78,7 +78,10 @@ export default ({
 		});
 		post.createdBy = req.user.id
 		// post.description = req.body.description
-		post.comments = req.body.comments
+		let newComment = new Comment()
+		newComment.createdBy = req.user.id
+		newComment.content = req.body.comments
+		post.comments.push(newComment)
 		post.multiparts = receivedmultiparts
 		post.save(function (err, savedPost) {
 			if (err) {
