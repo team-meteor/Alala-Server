@@ -11,9 +11,9 @@ let PostSchema = new Schema({
 	multiparts: [{
 		type: String
 	}],
-	description: {
-		type: String
-	},
+	// description: {
+	// 	type: String
+	// },
 	createdAt: {
 		type: Date,
 		default: Date.now
