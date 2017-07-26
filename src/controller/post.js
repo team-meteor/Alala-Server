@@ -28,11 +28,22 @@ export default ({
 				sort: {
 					createdAt: -1
 				},
-				populate: [
-					{path: 'createdBy'}, 
-					{path: 'likedUsers'},
-					{path: 'comments', model: 'Comment'},
-					{path: 'comments', populate: {path: 'createdBy'}},
+				populate: [{
+						path: 'createdBy'
+					},
+					{
+						path: 'likedUsers'
+					},
+					{
+						path: 'comments',
+						model: 'Comment'
+					},
+					{
+						path: 'comments',
+						populate: {
+							path: 'createdBy'
+						}
+					},
 				],
 				page: req.body.page
 			}
@@ -77,20 +88,38 @@ export default ({
 			receivedmultiparts.push(element)
 		});
 		post.createdBy = req.user.id
-		// post.description = req.body.description
 		let newComment = new Comment()
 		newComment.createdBy = req.user.id
-		newComment.content = req.body.comments
-		post.comments.push(newComment)
-		post.multiparts = receivedmultiparts
-		post.save(function (err, savedPost) {
-			if (err) {
-				res.send(err)
-			}
-			Post.findById(savedPost._id).populate('createdBy').exec((err, post) => {
-				res.json(post)
+		newComment.content = req.body.content
+		newComment.save((err) => {
+			post.multiparts = receivedmultiparts
+			post.comments.push(newComment)
+			post.save(function (err, savedPost) {
+				if (err) {
+					res.send(err)
+				}
+				Post.findById(savedPost._id).populate([{
+						path: 'createdBy'
+					},
+					{
+						path: 'likedUsers'
+					},
+					{
+						path: 'comments',
+						model: 'Comment'
+					},
+					{
+						path: 'comments',
+						populate: {
+							path: 'createdBy'
+						}
+					},
+				]).exec((err, post) => {
+					res.json(post)
+				})
 			})
 		})
+
 	})
 
 	api.post('/like', authenticate, (req, res) => {
@@ -103,10 +132,12 @@ export default ({
 					res.send(err)
 				}
 				if (post.likedUsers.indexOf(user._id) === -1) {
-					post.likedUsers.push(user._id)	
+					post.likedUsers.push(user._id)
 				}
 				post.save((err, savedPost) => {
-					Post.findById(savedPost.id).populate({path: 'likedUsers'}).exec((err, post) => {
+					Post.findById(savedPost.id).populate({
+						path: 'likedUsers'
+					}).exec((err, post) => {
 						res.json(post)
 					})
 				})
