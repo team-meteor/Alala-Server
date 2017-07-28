@@ -19,6 +19,7 @@ export default ({
 			if (err) {
 				res.send(err)
 			}
+			user.following.push(req.user.id)
 			const query = {
 				createdBy: {
 					$in: user.following
@@ -62,7 +63,23 @@ export default ({
 			sort: {
 				createdAt: -1
 			},
-			populate: ['createdBy', 'likedUsers', 'comments'],
+			populate: [{
+					path: 'createdBy'
+				},
+				{
+					path: 'likedUsers'
+				},
+				{
+					path: 'comments',
+					model: 'Comment'
+				},
+				{
+					path: 'comments',
+					populate: {
+						path: 'createdBy'
+					}
+				},
+			],
 			page: req.body.page
 		}
 		Post.paginate(query, options, (err, result) => {
