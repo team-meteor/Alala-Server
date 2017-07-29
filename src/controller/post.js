@@ -202,8 +202,8 @@ export default ({
 			newComment.save((err, savedComment) => {
 				post.comments.push(savedComment)
 				post.save((err, updatedPost) => {
-					Post.findById(updatedPost._id).populate('createdBy comments').exec((err, post) => {
-						res.json(post)
+					Comment.findById(savedComment._id).populate('createdBy comments').exec((err, comment) => {
+						res.json(comment)
 					})
 				})
 			})
