@@ -139,11 +139,12 @@ export default ({
 					targetUser.followers.push(me._id)
 					me.save((err) => {
 						if (err) {
-							res.send(err)
+							return res.send(err)
 						}
 						targetUser.save((err) => {
 							if (err) {
-								res.send(err)
+								console.log(err)
+								return res.send(err)
 							}
 							User.findById(me._id).populate([{
 									path: 'followers'
@@ -157,7 +158,7 @@ export default ({
 						})
 					})
 				} else {
-					res.status(200).send('already followed')
+					res.send('already followed')
 				}
 			})
 		})
@@ -170,11 +171,11 @@ export default ({
 				targetUser.followers = targetUser.followers.filter(item => String(item) !== String(me._id))
 				me.save((err) => {
 					if (err) {
-						res.send(err)
+						return res.send(err)
 					}
 					targetUser.save((err) => {
 						if (err) {
-							res.send(err)
+							return res.send(err)
 						}
 						User.findById(me._id).populate([{
 								path: 'followers'
@@ -190,6 +191,5 @@ export default ({
 			})
 		})
 	})
-
 	return api
 }
