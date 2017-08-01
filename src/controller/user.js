@@ -23,10 +23,13 @@ export default ({
 		// 	}
 		// 	res.json(users)
 		// })
-		
-		User.find({}).populate([
-			{path: 'followers'},
-			{path: 'following'}
+
+		User.find({}).populate([{
+				path: 'followers'
+			},
+			{
+				path: 'following'
+			}
 		]).exec((err, users) => {
 			res.json(users)
 		})
@@ -142,7 +145,15 @@ export default ({
 							if (err) {
 								res.send(err)
 							}
-							res.status(200).send('follow successed')
+							User.findById(me._id).populate([{
+									path: 'followers'
+								},
+								{
+									path: 'following'
+								}
+							]).exec((err, user) => {
+								res.json(user)
+							})
 						})
 					})
 				} else {
@@ -165,7 +176,15 @@ export default ({
 						if (err) {
 							res.send(err)
 						}
-						res.status(200).send('unfollow successed')
+						User.findById(me._id).populate([{
+								path: 'followers'
+							},
+							{
+								path: 'following'
+							}
+						]).exec((err, user) => {
+							res.json(user)
+						})
 					})
 				})
 			})
