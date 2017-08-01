@@ -146,7 +146,7 @@ export default ({
 							User.findById(req.user.id)
 							.populate('following').populate('followers')
 							.exec((err, user) => {
-							res.status(200).json(user.following)
+							res.status(200).json(user)
 							})
 						})
 					})
@@ -173,7 +173,7 @@ export default ({
 						User.findById(req.user.id)
 						.populate('following').populate('followers')
 						.exec((err, user) => {
-						res.status(200).json(user.following)
+						res.status(200).json(user)
 						})
 					})
 				})
