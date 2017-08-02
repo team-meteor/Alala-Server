@@ -41,7 +41,11 @@ let UserSchema = new Schema({
 	},
 	phone: {
 		type: String
-	}
+	},
+	bookMarks: [{
+		type: Schema.Types.ObjectId,
+		ref: 'Post'
+	}]
 })
 
 UserSchema.plugin(passportLocalMongoose)

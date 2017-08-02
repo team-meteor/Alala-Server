@@ -217,5 +217,107 @@ export default ({
 
 	// update post
 
+	api.post('/addBookMark', authenticate, (req, res) => {
+		Post.findById(req.body.id, (err, post) => {
+			if (err) {
+				res.send(err)
+			}
+			User.findById(req.user.id, (err, me) => {
+				if (err) {
+					res.send(err)
+				}
+				if (me.bookMarks.indexOf(post._id) === -1) {
+					me.bookMarks.push(post._id)
+				}
+				me.save((err, savedUser) => {
+					User.findById(savedUser.id)
+					.populate([
+						{
+						path: 'bookMarks',
+						model: 'Post'
+						},
+						{
+						path: 'bookMarks',
+						populate: [{
+							path: 'createdBy'
+							},
+							{
+							path: 'likedUsers'
+							},
+							{
+							path: 'comments',
+							model: 'Comment'
+							},
+							{
+							path: 'comments',
+							populate: {
+								path: 'createdBy'
+								}
+								},
+								{
+								path: 'bookMarks',
+								model: 'Post'
+								}
+						]
+						},
+					])
+					.exec((err, user) => {
+						res.json(user)
+					})
+				})
+			})
+		})
+	})
+
+	api.post('/deleteBookMark', authenticate, (req, res) => {
+		Post.findById(req.body.id, (err, post) => {
+			if (err) {
+				res.send(err)
+			}
+			User.findById(req.user.id, (err, me) => {
+				if (err) {
+					res.send(err)
+				}
+				me.bookMarks = me.bookMarks.filter(item => String(item) !== String(post._id))
+				me.save((err, savedUser) => {
+					User.findById(savedUser.id)
+					.populate([
+						{
+						path: 'bookMarks',
+						model: 'Post'
+						},
+						{
+						path: 'bookMarks',
+						populate: [{
+							path: 'createdBy'
+							},
+							{
+							path: 'likedUsers'
+							},
+							{
+							path: 'comments',
+							model: 'Comment'
+							},
+							{
+							path: 'comments',
+							populate: {
+								path: 'createdBy'
+								}
+								},
+								{
+								path: 'bookMarks',
+								model: 'Post'
+								}
+						]
+						},
+					])
+					.exec((err, user) => {
+						res.json(user)
+					})
+				})
+			})
+		})
+	})
+
 	return api
 }

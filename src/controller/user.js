@@ -120,6 +120,36 @@ export default ({
 	api.get('/me', authenticate, (req, res) => {
 		User.findById(req.user.id)
 			.populate('following').populate('followers')
+			.populate([
+				{
+					path: 'bookMarks',
+					model: 'Post'
+				},
+				{
+					path: 'bookMarks',
+					populate: [{
+						path: 'createdBy'
+						},
+						{
+						path: 'likedUsers'
+						},
+						{
+						path: 'comments',
+						model: 'Comment'
+						},
+						{
+						path: 'comments',
+						populate: {
+							path: 'createdBy'
+						}
+						},
+						{
+						path: 'bookMarks',
+						model: 'Post'
+						}
+					]
+				},
+			])
 			.exec((err, user) => {
 				res.status(200).json(user)
 			})
@@ -191,5 +221,6 @@ export default ({
 			})
 		})
 	})
+
 	return api
 }
