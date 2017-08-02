@@ -120,32 +120,31 @@ export default ({
 	api.get('/me', authenticate, (req, res) => {
 		User.findById(req.user.id)
 			.populate('following').populate('followers')
-			.populate([
-				{
+			.populate([{
 					path: 'bookMarks',
 					model: 'Post'
 				},
 				{
 					path: 'bookMarks',
 					populate: [{
-						path: 'createdBy'
-						},
-						{
-						path: 'likedUsers'
-						},
-						{
-						path: 'comments',
-						model: 'Comment'
-						},
-						{
-						path: 'comments',
-						populate: {
 							path: 'createdBy'
-						}
 						},
 						{
-						path: 'bookMarks',
-						model: 'Post'
+							path: 'likedUsers'
+						},
+						{
+							path: 'comments',
+							model: 'Comment'
+						},
+						{
+							path: 'comments',
+							populate: {
+								path: 'createdBy'
+							}
+						},
+						{
+							path: 'bookMarks',
+							model: 'Post'
 						}
 					]
 				},
@@ -177,14 +176,44 @@ export default ({
 								return res.send(err)
 							}
 							User.findById(me._id).populate([{
-									path: 'followers'
-								},
-								{
-									path: 'following'
-								}
-							]).exec((err, user) => {
-								res.json(user)
-							})
+										path: 'followers'
+									},
+									{
+										path: 'following'
+									}
+								])
+								.populate([{
+										path: 'bookMarks',
+										model: 'Post'
+									},
+									{
+										path: 'bookMarks',
+										populate: [{
+												path: 'createdBy'
+											},
+											{
+												path: 'likedUsers'
+											},
+											{
+												path: 'comments',
+												model: 'Comment'
+											},
+											{
+												path: 'comments',
+												populate: {
+													path: 'createdBy'
+												}
+											},
+											{
+												path: 'bookMarks',
+												model: 'Post'
+											}
+										]
+									},
+								])
+								.exec((err, user) => {
+									res.json(user)
+								})
 						})
 					})
 				} else {
@@ -208,14 +237,44 @@ export default ({
 							return res.send(err)
 						}
 						User.findById(me._id).populate([{
-								path: 'followers'
-							},
-							{
-								path: 'following'
-							}
-						]).exec((err, user) => {
-							res.json(user)
-						})
+									path: 'followers'
+								},
+								{
+									path: 'following'
+								}
+							])
+							.populate([{
+									path: 'bookMarks',
+									model: 'Post'
+								},
+								{
+									path: 'bookMarks',
+									populate: [{
+											path: 'createdBy'
+										},
+										{
+											path: 'likedUsers'
+										},
+										{
+											path: 'comments',
+											model: 'Comment'
+										},
+										{
+											path: 'comments',
+											populate: {
+												path: 'createdBy'
+											}
+										},
+										{
+											path: 'bookMarks',
+											model: 'Post'
+										}
+									]
+								},
+							])
+							.exec((err, user) => {
+								res.json(user)
+							})
 					})
 				})
 			})
