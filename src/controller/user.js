@@ -16,14 +16,47 @@ export default ({
 	db
 }) => {
 	let api = Router()
+	api.get('/model', authenticate, (req, res) => {
+		console.log(req.query.id)
+		// User.findById(req.query.id)
+		User.findOne({'profileName': req.query.id})
+			.populate('following').populate('followers')
+			.populate([{
+					path: 'bookMarks',
+					model: 'Post'
+				},
+				{
+					path: 'bookMarks',
+					populate: [{
+							path: 'createdBy'
+						},
+						{
+							path: 'likedUsers'
+						},
+						{
+							path: 'comments',
+							model: 'Comment'
+						},
+						{
+							path: 'comments',
+							populate: {
+								path: 'createdBy'
+							}
+						},
+						{
+							path: 'bookMarks',
+							model: 'Post'
+						}
+					]
+				},
+			])
+			.exec((err, user) => {
+				console.log(user)
+				res.status(200).json(user)
+			})
+	})
+	
 	api.get('/all', authenticate, (req, res) => {
-		// User.find({}, (err, users) => {
-		// 	if (err) {
-		// 		res.send(err)
-		// 	}
-		// 	res.json(users)
-		// })
-
 		User.find({}).populate([{
 				path: 'followers'
 			},
