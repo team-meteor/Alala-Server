@@ -217,19 +217,19 @@ export default ({
 
 	// update post
 
-	api.post('/addBookMark', authenticate, (req, res) => {
+	api.post('/bookmark/add', authenticate, (req, res) => {
 		Post.findById(req.body.id, (err, post) => {
 			if (err) {
 				res.send(err)
 			}
-			User.findById(req.user.id, (err, me) => {
+			User.findById(req.user.id, (err, user) => {
 				if (err) {
 					res.send(err)
 				}
-				if (me.bookMarks.indexOf(post._id) === -1) {
-					me.bookMarks.push(post._id)
+				if (user.bookMarks.indexOf(post._id) === -1) {
+					user.bookMarks.push(post._id)
 				}
-				me.save((err, savedUser) => {
+				user.save((err, savedUser) => {
 					User.findById(savedUser.id)
 					.populate([
 						{
@@ -269,17 +269,17 @@ export default ({
 		})
 	})
 
-	api.post('/deleteBookMark', authenticate, (req, res) => {
+	api.post('/bookmark/remove', authenticate, (req, res) => {
 		Post.findById(req.body.id, (err, post) => {
 			if (err) {
 				res.send(err)
 			}
-			User.findById(req.user.id, (err, me) => {
+			User.findById(req.user.id, (err, user) => {
 				if (err) {
 					res.send(err)
 				}
-				me.bookMarks = me.bookMarks.filter(item => String(item) !== String(post._id))
-				me.save((err, savedUser) => {
+				user.bookMarks = user.bookMarks.filter(item => String(item) !== String(post._id))
+				user.save((err, savedUser) => {
 					User.findById(savedUser.id)
 					.populate([
 						{

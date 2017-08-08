@@ -17,8 +17,6 @@ export default ({
 }) => {
 	let api = Router()
 	api.get('/model', authenticate, (req, res) => {
-		console.log(req.query.id)
-		// User.findById(req.query.id)
 		User.findOne({'profileName': req.query.id})
 			.populate('following').populate('followers')
 			.populate([{
@@ -51,7 +49,6 @@ export default ({
 				},
 			])
 			.exec((err, user) => {
-				console.log(user)
 				res.status(200).json(user)
 			})
 	})
@@ -205,7 +202,6 @@ export default ({
 						}
 						targetUser.save((err) => {
 							if (err) {
-								console.log(err)
 								return res.send(err)
 							}
 							User.findById(me._id).populate([{
