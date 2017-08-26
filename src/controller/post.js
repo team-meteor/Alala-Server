@@ -88,12 +88,40 @@ export default ({
 	})
 
 	// get a post by id
-	api.get('/:id', authenticate, (req, res) => {
-		Post.findById(req.params.id, (err, post) => {
+	api.post('/user', authenticate, (req, res) => {
+		Post.findById(req.body.id, (err, post) => {
 			if (err) {
 				res.send(err)
 			}
-			res.json(post)
+			//res.json(post)
+			const query = {
+				createdBy: req.body.id
+			}
+			const options = {
+				sort: {
+					createdAt: -1
+				},
+				populate: [{
+					path: 'createdBy'
+				},
+				{
+					path: 'likedUsers'
+				},
+				{
+					path: 'comments',
+					model: 'Comment'
+				},
+				{
+					path: 'comments',
+					populate: {
+						path: 'createdBy'
+					}
+				},],
+				page: req.body.page
+			}
+			Post.paginate(query, options, (err, result) => {
+				res.json(result)
+			})
 		})
 	})
 
